@@ -8,12 +8,13 @@
         const $ctrl = this;
 
         $http.get('mockData/100.json')
-          .then( response => $timeout( () => response, 3000) )
+          .then( response => $timeout( () => response, 1000) )
           .then( response => { $scope.$applyAsync(  $ctrl.gridOptionsRedering.data = response.data ) } );
 
         $ctrl.gridOptionsRedering = {
           enableFiltering: false,
           rowTemplate: rowTemplate(),
+          height: 70,
           columnDefs: [
             { name: 'name' },
             { name: 'gender' },
@@ -22,13 +23,8 @@
         };
 
         function rowTemplate() {
-          return $timeout(() => '<div>' +
-              '<div class="ui-grid-cell" ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.colDef.name" ui-grid-cell></div>' +
-              '</div>'
-          , 6000);
+          return $timeout(() => '<timecard-cell container="colContainer" col="colContainer.renderedColumns" row="row"></timecard-cell>', 2000);
         }
-
-      console.log('$ctrl', $ctrl);
     });
 
     app.component('uiGridWrapper', {
@@ -41,9 +37,19 @@
         }
       });
 
+    app.component('timecardCell', {
+        controller: timecardCellController,
+        template: '<div class="ui-grid-cell" ng-repeat="cell in col" ui-grid-cell></div>',
+        bindings: {
+          row: '<',
+          col: '<',
+          container: '<'
+        }
+      });
+
     uiGridWrapperController.$inject = ['$scope', '$element', '$http', '$timeout'];
 
-    function uiGridWrapperController($scope, $element, $http, $timeout){
+    function uiGridWrapperController(){
       const $ctrl = this;
       $ctrl.gridOptions = $ctrl.rendering;
 
@@ -52,7 +58,10 @@
       //     $ctrl.rendering.data = changesObj.rendering.currentValue.data;
       //   }
       // };
-      console.log('$ctrl', $ctrl);
+    }
+
+    function timecardCellController(){
+      console.log('$ctrl in timecardCellController', this);
     }
 
     angular.element(document).ready( () => angular.bootstrap(document, ['app']) );
